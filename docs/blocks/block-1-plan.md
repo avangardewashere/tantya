@@ -1,7 +1,7 @@
 # Block 1: Materials calculator — the working plan
 
-**Status:** 🔨 **phases 1–3 done** · 109 tests green in both timezones · all four planted bugs
-caught · phases 4–6 not started (phase 4 waits on the reference book).
+**Status:** 🔨 **phases 1–3 and 5 done** · 132 tests green in both timezones · all four planted bugs
+caught · phase 4 still waiting on the reference book · phase 6 not started.
 
 `PLAN.md` says *what* Block 1 is and lists rows B1-T1…T11. This file says *in what order*, and where
 the work is blocked. It is the phasing, not a second spec — where the two disagree, `PLAN.md` wins.
@@ -37,7 +37,7 @@ Six phases, about four sessions. A session is one sitting of roughly two hours.
 | 2 | `chbWall` and `concrete` | B1-T1, T2, T3, T4, T7 | ✅ done |
 | 3 | `toPurchaseLines` | B1-T5 | ✅ done |
 | 4 | Production factor table · `test:release` ← **needs the book** | B1-T6, T8 | ⏸ blocked |
-| 5 | `WorkItemForm` | B1-T9, T10 | ⏳ next |
+| 5 | `WorkItemForm` | B1-T9, T10 | ✅ done |
 | 6 | Coverage, planted bugs, hand checks, block note, gate | B1-T11 | ⏳ |
 
 ---
@@ -210,3 +210,50 @@ now turns B1-T1 red.
 
 This is the argument for planting bugs at all, made concrete. Coverage would have shown that line
 green either way.
+
+
+---
+
+## Checkpoint after phase 5
+
+Phase 5 was taken before phase 4 because phase 4 is blocked on the book and phase 5 is not, and
+because the app had a proven engine with no way in.
+
+**132 tests, 9 suites, green in both timezones.** Lint, typecheck, build clean. B1-T9 and B1-T10
+closed.
+
+### Two things the browser caught that jsdom could not
+
+1. **The page scrolled sideways at phone width** — 748 px of content in a 393 px viewport. A text
+   input has an intrinsic minimum width and a `1fr` grid column honours it, so the openings row
+   refused to shrink. Fixed with `min-w-0` on each cell, `w-full` on each control, and two columns
+   instead of four until there is room. Re-measured: `scrollWidth` 393 = `clientWidth`.
+
+   jsdom has no layout engine, so **no Jest test could ever have found this.** It is exactly what
+   the plan's "outside Jest" list is for, and it was found by driving a real browser at 393 × 851.
+
+2. **Two fields both called "Height"** — the wall's, and each opening's. Identical accessible names,
+   which is fine on screen (the layout says which is which) and useless to anyone listening to the
+   page. jest-axe passed it, because ambiguous-but-present labels are not a violation. Fixed with an
+   `sr-only` qualifier: "Height of opening 1". The Remove buttons got the same treatment.
+
+### An interim deviation
+
+`src/engine/production-factors.ts` exists now, one phase early, because the form's contract is that
+its `factors` prop **defaults to the production table**. Every factor in it has `verifiedOn: null`
+and a source that says `PLACEHOLDER`, which is the truth. The consequences are visible and
+deliberate:
+
+- every line in the running app carries the **unverified** chip;
+- the page shows a red banner, driven by `everyFactorIsUnverified()` rather than hard-coded, so it
+  cannot be left up after the table is real or taken down before;
+- phase 4's `test:release` will refuse to pass until the dates are filled in.
+
+Phase 4 replaces the values, the sources and the dates. Nothing about the structure changes.
+
+### Still open
+
+- **Phase 4** — the reference book.
+- **Phase 6** — engine branch coverage was 86.9% before the form; B1-T11 wants 95%, enforced in CI.
+- **The Android hand checks** — the numeric keypad and one-handed reach, both waiting on Vercel.
+  The desktop half of the layout check is done and recorded above.
