@@ -198,8 +198,8 @@ thing that lives in a URL is the client quote token in Block 9.
 | **v2** | A tool you come back to. Saved on the device | **4** Saved estimates | **5** Steel: cutting list | **6** Wall finishes: plaster and paint |
 | **v3** | Out of one phone. First server code | **7** Export: CSV and the share sheet | **8** Accounts and cloud backup | **9** Client quote link |
 
-**Progress:** this guide was pushed to GitHub on 2026-09-21. Nothing is built yet. Waiting for your yes
-on the remaining Block 0 decisions, then on Block 0 itself.
+**Progress:** this guide was pushed to GitHub on 2026-09-21. Nothing is built yet. All six Block 0
+decisions were agreed on 2026-09-21 (see [Decisions](#decisions)). Waiting for your yes on Block 0 itself.
 
 v1 is planned in full. v2 and v3 are the current best guess and get **re-planned when that version
 starts**, with what we learned and what a real user said.
@@ -805,14 +805,14 @@ Each 🟡 row is a **recommendation, not a decision**. Claude asks about it at t
 |---|---|---|---|
 | The product | **Tantya**, the estimator. A panel of three judges scored four ideas (see the last section) | Block 0 | ✅ kept when the repo was created, 2026-09-21 |
 | Name | **Tantya**. Also considered: **Sukat** (*measure*). It becomes the repo and the URL | Block 0 | ✅ kept when the repo was created, 2026-09-21 |
-| A setup block outside the three features | Yes: Block 0. The other choice is folding setup into Block 1, which makes Block 1 too big | Block 0 | 🟡 |
-| What counts as one feature | One new thing a user can do, with one way in. Three blocks put two closely tied parts behind that one way in: **1** (wall + concrete, one form with a switch), **5** (cutting list + "fill from a wall"), **6** (plaster + paint, one "finish this wall" panel). This needs your explicit yes. On a strict reading, Blocks 5 and 6 take their cut lines from the start, and Block 1 ships walls only, with new worked examples and concrete moved to the Backlog | Block 0 | 🟡 |
-| Test tools | Jest 30 + React Testing Library + user-event + jest-axe. Playwright in Block 9 only, after asking | Block 0 | 🟡 |
-| Exact maths | `BigInt` inside the engine. Plain numbers for money, behind a guarded limit | Block 0 | 🟡 |
-| Look and feel | **Site clipboard:** light and high-contrast for sunlight, big number fields, numbers in aligned columns, one safety-yellow accent. Others: **Blueprint** (deep blue, thin white lines) or **Receipt** (monospace on paper) | Block 0 | 🟡 |
-| How work is pushed | One branch per block (`block-4-saved-estimates`). Pushing it runs CI and gives a Vercel preview link for the hand checks. It is merged to `master` only after your yes at the gate, so the live site is always the last block you approved | Block 0 | 🟡 |
+| A setup block outside the three features | Yes: Block 0. The other choice is folding setup into Block 1, which makes Block 1 too big | Block 0 | ✅ agreed 2026-09-21 |
+| What counts as one feature | One new thing a user can do, with one way in. Three blocks put two closely tied parts behind that one way in: **1** (wall + concrete, one form with a switch), **5** (cutting list + "fill from a wall"), **6** (plaster + paint, one "finish this wall" panel). This needs your explicit yes. On a strict reading, Blocks 5 and 6 take their cut lines from the start, and Block 1 ships walls only, with new worked examples and concrete moved to the Backlog | Block 0 | ✅ agreed 2026-09-21: two tied parts behind one way in is one feature. Block 1 ships wall **and** concrete |
+| Test tools | Jest 30 + React Testing Library + user-event + jest-axe. Playwright in Block 9 only, after asking | Block 0 | ✅ agreed 2026-09-21 |
+| Exact maths | `BigInt` inside the engine. Plain numbers for money, behind a guarded limit | Block 0 | ✅ agreed 2026-09-21 |
+| Look and feel | **Site clipboard:** light and high-contrast for sunlight, big number fields, numbers in aligned columns, one safety-yellow accent. Others: **Blueprint** (deep blue, thin white lines) or **Receipt** (monospace on paper) | Block 0 | ✅ agreed 2026-09-21: **Site clipboard** |
+| How work is pushed | One branch per block (`block-4-saved-estimates`). Pushing it runs CI and gives a Vercel preview link for the hand checks. It is merged to `master` only after your yes at the gate, so the live site is always the last block you approved | Block 0 | ✅ agreed 2026-09-21 |
 | Reference for factors | One you trust, such as Fajardo's *Simplified Construction Estimate*. Every factor is checked by hand and cited. Tantya includes only the factors it uses | Block 1 | 🟡 |
-| Where data lives | v1 memory · v2 this device · v3 Supabase as well | Blocks 2, 4, 8 | 🟡 |
+| Where data lives | v1 memory · v2 this device · v3 Supabase as well | Blocks 2, 4, 8 | 🟡 (v1 in memory confirmed 2026-09-21; v2 and v3 still open) |
 | How the public quote page reads the database | A database function that accepts only a token hash | Block 9 | 🟡 |
 
 ## Known limits (on purpose)

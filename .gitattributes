@@ -1,0 +1,21 @@
+# Line endings, settled once.
+#
+# Git on Windows can rewrite line endings on checkout. Block 7 writes a CSV
+# with Windows line endings on purpose — Excel wants them — and keeps expected
+# bytes as fixtures. Without this file those fixtures would be rewritten on a
+# Windows checkout, and a test could pass on one machine and fail on CI.
+
+# Normalise real source files to LF in the repository.
+* text=auto eol=lf
+
+# Never touch these: their bytes are the thing under test.
+*.csv -text
+**/__fixtures__/** -text
+
+# Binary.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary

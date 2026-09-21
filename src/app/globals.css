@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/**
+ * Site clipboard.
+ *
+ * Tantya is read standing in a hardware store or outdoors on a job site at
+ * noon, on a mid-range Android with the brightness losing to the sun. So:
+ * one light theme and nothing else, the strongest contrast we can get,
+ * generous touch targets, and numbers in a tabular face so columns of
+ * quantities line up down the page.
+ *
+ * There is deliberately no dark mode. A dark theme in direct sunlight is
+ * unreadable, and this app has one job in one place.
+ */
+
+:root {
+  /* Paper, and ink. Measured 17.4:1 — well past WCAG AAA for body text. */
+  --paper: #faf9f5;
+  --paper-raised: #ffffff;
+  --ink: #16150f;
+  --ink-soft: #55524a;
+
+  /* Ruled lines, like the clipboard this replaces. --rule is a decorative
+     hairline at 1.4:1; anything that carries meaning uses --rule-strong,
+     which is 3.4:1 and meets the 3:1 floor for non-text. */
+  --rule: #d6d2c6;
+  --rule-strong: #8c877a;
+
+  /* One accent: hi-vis site yellow, always with ink on top of it. */
+  --accent: #f2c200;
+  /* The readable form of the accent, for focus rings and small text: 4.7:1. */
+  --accent-deep: #8a6d00;
+
+  /* An error has to survive sunlight too. Measured 7.4:1 on paper. */
+  --danger: #a4160f;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-numeric: ui-monospace, "SF Mono", "Roboto Mono", "DejaVu Sans Mono",
+    Menlo, Consolas, monospace;
+
+  /* Big enough to hit with a thumb, in gloves, on a phone. */
+  --touch-target: 2.75rem;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-sans);
+  --font-numeric: var(--font-numeric);
+}
+
+html {
+  /* Never let the phone reflow our number columns. */
+  -webkit-text-size-adjust: 100%;
+  color-scheme: light;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  /* 17px: one step up from the default, for arm's length in bright light. */
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+/**
+ * Every quantity, every peso amount. Tabular figures keep the columns in
+ * line, and slashed zeroes are harder to misread as an eight on a bright
+ * screen.
+ */
+.numeric {
+  font-family: var(--font-numeric);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* Visible keyboard focus, on paper, without relying on the browser default. */
+:focus-visible {
+  outline: 3px solid var(--accent-deep);
+  outline-offset: 2px;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+}
