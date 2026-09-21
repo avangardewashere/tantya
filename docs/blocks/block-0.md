@@ -1,8 +1,8 @@
 # Block 0: Groundwork
 
-**Status:** ✅ built · 55 tests passing in both timezones · lint, typecheck and build green locally ·
-**CI not yet observed green** (this is the first push that runs it) · **Vercel not yet connected**
-(you are doing that after this block)
+**Status:** ✅ done · 55 tests passing in both timezones · **CI green on GitHub**
+([run #1](https://github.com/avangardewashere/tantya/actions/runs/35637669669), all five steps) ·
+**Vercel not yet connected** (you are doing that after this block, which leaves two hand checks open)
 
 Setup is not a feature — no user can do anything with it — so it sits outside the three. It still
 followed the loop: worked examples, test rows, build, testing phase, summary, gate.
@@ -91,7 +91,7 @@ exists to remove.
 | B0-T4 | `parseMetres`: the three good cases, and nine refusals by name | `src/engine/__tests__/parse-metres.test.ts` |
 | B0-T5 | `roundUpToStep` on whole numbers; the `Math.ceil(0.7 / 0.1) * 0.1` counter-example | `src/engine/__tests__/round.test.ts` |
 | B0-T6 | The float trap at the ruler: `0.1 * 3 * 10`, and 3,000,000,000 mm³ exact | `src/engine/__tests__/round.test.ts` |
-| B0-T7 | CI green: lint, typecheck, test, test:utc, build | `.github/workflows/ci.yml` — **green locally, not yet observed on GitHub** |
+| B0-T7 | CI green: lint, typecheck, test, test:utc, build | `.github/workflows/ci.yml` — ✅ [run #1](https://github.com/avangardewashere/tantya/actions/runs/35637669669): lint 2s, typecheck 3s, test 3s, test:utc 4s, build 8s |
 
 `npm test` and `npm run test:utc`: **55 passing, 5 suites, both timezones.**
 
@@ -112,7 +112,7 @@ and the add-before-round case caught it. A suite of nice round examples would ha
 
 | Item | Result | Who |
 |---|---|---|
-| `npm run build` passes | ✅ Next 16.3.5, 3 static routes | Claude |
+| `npm run build` passes | ✅ Next 16.3.5, 3 static routes — locally and on CI | Claude |
 | Renders in desktop Chrome | ✅ 1280×800 | Claude, headless Chromium |
 | Renders at phone width | ✅ 393×851 at DPR 3, **no sideways scroll** (`scrollWidth` 393 = `clientWidth`) | Claude, headless Chromium |
 | Text contrast in Chrome | ✅ read off the live page. Ink 17.4:1, soft ink 7.4:1, danger 7.4:1, ink on accent 10.9:1 — all AAA. Accent-deep 4.7:1 (AA), focus rings only | Claude |
@@ -137,8 +137,7 @@ and two planted bugs proved the tests can see them.
 
 ## Gate
 
-> Groundwork is done: 55 tests green in both timezones, lint, typecheck and build clean, two planted
-> bugs caught. Outside Jest: 4 ✅ (build, desktop Chrome, phone width, contrast), 2 ⏭️ — the Android
+> Groundwork is done: 55 tests green in both timezones, CI green on GitHub, two planted bugs caught. Outside Jest: 4 ✅ (build, desktop Chrome, phone width, contrast), 2 ⏭️ — the Android
 > preview and the sunlight check, both waiting on Vercel. Before Block 1 I need your yes on the
 > reference book for factors.
 >
