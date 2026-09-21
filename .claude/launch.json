@@ -1,0 +1,11 @@
+{
+  "apps": {
+    "tantya": {
+      "cwd": ".",
+      "command": "npm run dev",
+      "port": 3004,
+      "url": "http://localhost:3004",
+      "description": "Tantya — Sukat in, quotation out"
+    }
+  }
+}
