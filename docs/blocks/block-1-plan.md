@@ -1,7 +1,7 @@
 # Block 1: Materials calculator — the working plan
 
-**Status:** 📋 planned, not started. Block 1 does not begin until the gate in
-[`block-0.md`](block-0.md) is answered.
+**Status:** 🔨 **phases 1–3 done** · 109 tests green in both timezones · all four planted bugs
+caught · phases 4–6 not started (phase 4 waits on the reference book).
 
 `PLAN.md` says *what* Block 1 is and lists rows B1-T1…T11. This file says *in what order*, and where
 the work is blocked. It is the phasing, not a second spec — where the two disagree, `PLAN.md` wins.
@@ -33,12 +33,12 @@ Six phases, about four sessions. A session is one sitting of roughly two hours.
 
 | Phase | What | Rows closed | Session |
 |---|---|---|---|
-| 1 | Worked examples, both columns · the types · the frozen test table | — | 1 |
-| 2 | `chbWall` and `concrete` | B1-T1, T2, T3, T4, T7 | 1–2 |
-| 3 | `toPurchaseLines` | B1-T5 | 2 |
-| 4 | Production factor table · `test:release` ← **needs the book** | B1-T6, T8 | 3 |
-| 5 | `WorkItemForm` | B1-T9, T10 | 3–4 |
-| 6 | Coverage, planted bugs, hand checks, block note, gate | B1-T11 | 4 |
+| 1 | Worked examples, both columns · the types · the frozen test table | — | ✅ done |
+| 2 | `chbWall` and `concrete` | B1-T1, T2, T3, T4, T7 | ✅ done |
+| 3 | `toPurchaseLines` | B1-T5 | ✅ done |
+| 4 | Production factor table · `test:release` ← **needs the book** | B1-T6, T8 | ⏸ blocked |
+| 5 | `WorkItemForm` | B1-T9, T10 | ⏳ next |
+| 6 | Coverage, planted bugs, hand checks, block note, gate | B1-T11 | ⏳ |
 
 ---
 
@@ -179,3 +179,34 @@ Block 2) · plaster · steel · saving.
 > Block 1 is done. *(summary, 1–3 sentences)* Tests: N passing, 4 planted bugs caught, CI green.
 > Outside Jest: 2 ✅.
 > **Shall I start Block 2, the estimate sheet with prices?**
+
+
+---
+
+## Checkpoint after phase 3
+
+**109 tests, 8 suites, green under `npm test` and `npm run test:utc`.** Lint, typecheck and build
+clean. Engine branch coverage **86.9%** — below B1-T11's 95% bar, which is phase 6's job; the gaps
+are Block 0 guard clauses in `fraction.ts` and `units.ts`, not the new calculators (`chb-wall.ts`,
+`concrete.ts` and `purchase-lines.ts` are all at 100%).
+
+All four of Block 1's bugs were planted early, one at a time, and restored:
+
+| Planted bug | Tests turned red |
+|---|---|
+| Multiply in floats | 6 |
+| Round up before wastage | 6 |
+| Forget to subtract the openings | 3 |
+| Round each need before adding | 3 |
+
+**What planting them early found.** The first pass of the float bug did **not** turn B1-T1 red — the
+row whose entire job is the float trap. Floating-point multiplication is order-dependent:
+`0.1 * 3 * 10` is `3.0000000000000004`, but `3 * 10 * 0.1` is exactly `3`. The planted engine
+multiplied length × width × depth and so passed the golden by luck.
+
+A second, order-independent golden was worked out and added: a 10 m × 10 m slab 70 mm thick is
+exactly **63 bags**, and every float ordering gives `63.00000000000001` → 64. Re-planting the bug
+now turns B1-T1 red.
+
+This is the argument for planting bugs at all, made concrete. Coverage would have shown that line
+green either way.

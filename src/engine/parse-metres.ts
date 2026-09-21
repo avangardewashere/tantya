@@ -1,3 +1,4 @@
+import { err as toErr, type Result } from './result'
 import { MILLIMETRES_PER_METRE, type Millimetres } from './units'
 
 /**
@@ -30,9 +31,7 @@ export type MeasurementError = {
   readonly message: string
 }
 
-export type ParseResult<T> =
-  | { readonly ok: true; readonly value: T }
-  | { readonly ok: false; readonly error: MeasurementError }
+export type ParseResult<T> = Result<T, MeasurementError>
 
 /**
  * One kilometre. Longer than any wall Tantya is for, and short enough that a
@@ -48,10 +47,8 @@ const SCIENTIFIC = /^[+-]?(?:\d+\.?\d*|\.\d+)[eE][+-]?\d+$/
 const IMPERIAL_SUFFIX = /^[+-]?[\d.,]+\s*(?:ft|foot|feet|in|inch|inches|yd|yard|yards|['"])$/i
 const ANY_SUFFIX = /^[+-]?[\d.,]+\s*[a-z%°]+$/i
 
-const fail = (code: MeasurementErrorCode, message: string): ParseResult<never> => ({
-  ok: false,
-  error: { code, message },
-})
+const fail = (code: MeasurementErrorCode, message: string): ParseResult<never> =>
+  toErr({ code, message })
 
 export function parseMetres(text: string): ParseResult<Millimetres> {
   const trimmed = text.trim()

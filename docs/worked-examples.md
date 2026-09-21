@@ -98,5 +98,120 @@ the same way.
 
 ## Block 1: the materials calculator
 
-*Filled in when Block 1 starts. Its examples need a reference book open, so they cannot be worked
-before the book is chosen.*
+These use the **frozen test table**, not real factors. Frozen values are invented round numbers,
+chosen so the arithmetic can be checked by hand; they are never shipped and never change, so
+correcting a real factor later cannot turn the suite red.
+
+| Frozen factor | Value |
+|---|---|
+| CHB blocks per m² | 12.5 pcs/m² |
+| Mortar cement, 150 mm, class A | 1.018 bags/m² |
+| Mortar cement, 200 mm, class A | 1.300 bags/m² |
+| Mortar sand, 150 mm | 0.058 m³/m² |
+| Mortar sand, 200 mm | 0.074 m³/m² |
+| Concrete cement, class AA · A · B · C | 12 · 9 · 7.5 · 6 bags/m³ |
+| Concrete sand, every class | 0.5 m³/m³ |
+| Concrete gravel, every class | 1.0 m³/m³ |
+
+Purchase steps: cement 1 bag, blocks 1 pc, sand and gravel 0.5 m³.
+
+Claude's column was worked in exact rational arithmetic **before the engine existed**, so no value
+here could have been read out of the code's output.
+
+### B1-T1 · the float trap, in the engine
+
+A slab 3 m × 10 m, 100 mm thick, class A. Inputs `'0.1'`, `'3'`, `'10'`.
+
+| Step | Working | Claude | You | Status |
+|---|---|---|---|---|
+| Volume | 3000 × 10000 × 100 mm | 3,000,000,000 mm³ | | ⏳ |
+| In cubic metres | ÷ 1000³ | exactly **3 m³** | | ⏳ |
+| Cement | 3 × 9 bags/m³ | exactly **27 bags** | | ⏳ |
+| The float version | `Math.ceil(0.1 * 3 * 10 * 9)` | **28** — one bag too many | | ⏳ |
+
+**This golden is not enough on its own, and that was found by planting the bug.** Floating-point
+multiplication is order-dependent: `0.1 * 3 * 10` is `3.0000000000000004`, but `3 * 10 * 0.1` is
+exactly `3`. A float engine that multiplied length × width × depth would pass the slab above **by
+luck**. So a second, order-independent golden was worked out:
+
+| Step | Working | Claude | You | Status |
+|---|---|---|---|---|
+| A 10 m × 10 m slab, 70 mm thick | 10000 × 10000 × 70 mm = 7,000,000,000 mm³ | **7 m³** exactly | | ⏳ |
+| Cement, class A | 7 × 9 | **63 bags** exactly | | ⏳ |
+| In floats, **every** order | `10*10*0.07*9`, `0.07*10*10*9`, `10*0.07*10*9` | all `63.00000000000001` → **64** | | ⏳ |
+
+Every ordering overshoots, and the overshoot crosses a whole bag, so it costs a real bag instead of
+disappearing at the purchase step. No lucky arrangement passes this row.
+
+### B1-T2 · wall goldens
+
+A wall 3.0 m × 2.7 m, 150 mm, mortar class A. Area 3000 × 2700 = 8,100,000 mm² = **8.1 m²**.
+
+| Case | Working | Exact | Buy | Claude | You | Status |
+|---|---|---|---|---|---|---|
+| (a) plain | 8.1 × 12.5 | 101.25 | round up | **102 pcs** | | ⏳ |
+| (b) one 0.9 × 2.1 m door | opening 1.89 m²; 8.1 − 1.89 = 6.21; × 12.5 | 77.625 | round up | **78 pcs** | | ⏳ |
+| (c) no door, 5% wastage | 101.25 × 1.05 | 106.3125 | round up | **107 pcs** | | ⏳ |
+| (c) the wrong order | round up *first*: 102, then × 1.05 = 107.1 | — | round up | **108 pcs** ✗ | | ⏳ |
+
+(c) is the rule: **wastage before rounding, never after.** One block apart, and neither looks wrong.
+
+### B1-T3 · thickness changes the mortar, never the block count
+
+The same 8.1 m² wall, mortar class A, no wastage.
+
+| Thickness | Blocks | Cement | Sand |
+|---|---|---|---|
+| 150 mm | 101.25 → **102 pcs** | 8.1 × 1.018 = 8.2458 → **9 bags** | 8.1 × 0.058 = 0.4698 → **0.5 m³** |
+| 200 mm | 101.25 → **102 pcs** | 8.1 × 1.300 = 10.53 → **11 bags** | 8.1 × 0.074 = 0.5994 → **1.0 m³** |
+
+Claude: as above. You: ⏳
+
+The block count is identical; only the mortar moves. (The *material* changes — a 200 mm block is a
+different product from a 150 mm one — but the count does not.)
+
+**Openings bigger than the wall** give a named error, never a negative number. An opening exactly
+equal to the wall is not an error: it is a wall that is all door, and it needs nothing.
+
+### B1-T4 · concrete goldens
+
+Six footings, 1.0 × 1.0 × 0.25 m. Volume 250,000,000 mm³ each × 6 = **1.5 m³**.
+
+| Class | Cement exact | Buy | Sand | Gravel | Claude | You | Status |
+|---|---|---|---|---|---|---|---|
+| AA | 1.5 × 12 = 18 | **18 bags** | 0.75 → **1.0 m³** | 1.5 → **1.5 m³** | ✔ | | ⏳ |
+| A | 1.5 × 9 = 13.5 | **14 bags** | 0.75 → **1.0 m³** | 1.5 → **1.5 m³** | ✔ | | ⏳ |
+| B | 1.5 × 7.5 = 11.25 | **12 bags** | 0.75 → **1.0 m³** | 1.5 → **1.5 m³** | ✔ | | ⏳ |
+| C | 1.5 × 6 = 9 | **9 bags** | 0.75 → **1.0 m³** | 1.5 → **1.5 m³** | ✔ | | ⏳ |
+
+Sand at 0.75 m³ rounds up to 1.0 because the step is half a cubic metre — it is not 0.75 you can buy.
+
+### B1-T5 · `toPurchaseLines` adds before it rounds
+
+Two class B columns, 0.25 × 0.25 m, one 3.15 m tall and one 3.25 m tall.
+
+| Step | Working | Claude | You | Status |
+|---|---|---|---|---|
+| Column 1 | 250 × 250 × 3150 mm | 0.196875 m³ | | ⏳ |
+| Column 2 | 250 × 250 × 3250 mm | 0.203125 m³ | | ⏳ |
+| Together | 0.196875 + 0.203125 | **exactly 0.4 m³** | | ⏳ |
+| Cement, added first | 0.4 × 7.5 | exactly 3 → **3 bags** | | ⏳ |
+| Cement, rounded first | 1.4765625 → 2, and 1.5234375 → 2 | **4 bags** ✗ | | ⏳ |
+
+A whole bag of cement, bought for nothing, on a two-column job. On a real estimate this is where the
+money leaks.
+
+### B1-T7 · the largest allowed inputs
+
+Block 0 caps a length at 1 km. Block 1 caps a count at 100. The largest thing Tantya will compute:
+
+| Case | Working | Claude | You | Status |
+|---|---|---|---|---|
+| Wall 1 km × 1 km | 1,000,000 m² × 12.5 | **12,500,000 pcs** | | ⏳ |
+| … its cement | 1,000,000 × 1.018 | **1,018,000 bags** | | ⏳ |
+| … its sand | 1,000,000 × 0.058 | **58,000 m³** | | ⏳ |
+| 100 blocks of 1 km³, class AA | 10¹¹ m³ × 12 | **1.2 × 10¹² bags** | | ⏳ |
+| … in thousandths | 1.2 × 10¹⁵ | still exact — under 9.007 × 10¹⁵ | | ⏳ |
+
+Absurd as a job, and exactly the point: the arithmetic has to stay exact at the boundary, or the
+guard is where the silent wrong answer lives.
